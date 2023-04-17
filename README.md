@@ -1,2 +1,2 @@
-# my-wallet-backend
+# MyWallet - Backend
 API utilizada pelo MyWallet
