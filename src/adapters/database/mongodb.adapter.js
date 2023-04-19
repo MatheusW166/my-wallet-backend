@@ -33,10 +33,10 @@ class MongoDbAdapter {
     }
   };
 
-  findUserByEmail = async ({ email }) => {
+  findUser = async (userData) => {
     try {
       await this.connect();
-      return await this.db.collection("users").findOne({ email });
+      return await this.db.collection("users").findOne(userData);
     } catch (err) {
       throw Error(err.message);
     }

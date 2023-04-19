@@ -8,6 +8,7 @@ const router = Router();
 // User
 router.post("/login", userController.logIn);
 router.post("/register", userController.register);
+router.get("/user", tokenMiddlewares.validateToken, userController.getUserData);
 
 // Transaction
 router.post(
