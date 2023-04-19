@@ -9,6 +9,7 @@ async function validateToken(req, res, next) {
   if (!validate(token)) {
     return res.status(401).send("token is invalid");
   }
+  req.token = token;
   next();
 }
 
