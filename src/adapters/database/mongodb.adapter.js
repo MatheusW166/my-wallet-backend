@@ -58,16 +58,32 @@ class MongoDbAdapter {
       await this.connect();
       return await this.db
         .collection("sessions")
-        .insertOne({ idUser, token, createdAt: createdAt });
+        .insertOne({ idUser, token, createdAt });
     } catch (err) {
       throw Error(err.message);
     }
   };
 
-  findSession = async ({ idUser, token }) => {
+  insertTransaction = async ({
+    description,
+    value,
+    idUser,
+    createdAt = Date.now(),
+  }) => {
     try {
       await this.connect();
-      return await this.db.collection("sessions").findOne({ idUser, token });
+      return await this.db
+        .collection("transactions")
+        .insertOne({ idUser, value, description, createdAt });
+    } catch (err) {
+      throw Error(err.message);
+    }
+  };
+
+  findSession = async ({ token }) => {
+    try {
+      await this.connect();
+      return await this.db.collection("sessions").findOne({ token });
     } catch (err) {
       throw Error(err.message);
     }

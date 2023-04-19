@@ -72,11 +72,23 @@ function validateLogin(login) {
   return { value, error: mapError(error) };
 }
 
+function validateTransaction(transaction) {
+  const { value, error } = Joi.object({
+    value: Joi.number().greater(0).required(),
+    description: Joi.string()
+      .required()
+      .custom((value) => customHtmlStripTest(value, "description")),
+    isExit: Joi.bool().required(),
+  }).validate(transaction);
+  return { value, error: mapError(error) };
+}
+
 const validationAdapter = {
   validateId,
   validateLogin,
   validateToken,
   validateUser,
+  validateTransaction,
 };
 
 export default validationAdapter;
