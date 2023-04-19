@@ -51,4 +51,4 @@ async function register(req, res) {
 
 const userController = { logIn, register };
 
-export { userController };
+export default userController;
