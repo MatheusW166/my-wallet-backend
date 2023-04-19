@@ -80,6 +80,19 @@ class MongoDbAdapter {
     }
   };
 
+  findTransactions = async ({ idUser }) => {
+    try {
+      await this.connect();
+      return await this.db
+        .collection("transactions")
+        .find({ idUser })
+        .sort({ createdAt: -1 })
+        .toArray();
+    } catch (err) {
+      throw Error(err.message);
+    }
+  };
+
   findSession = async ({ token }) => {
     try {
       await this.connect();
@@ -92,9 +105,16 @@ class MongoDbAdapter {
   findLastSession = async ({ idUser }) => {
     try {
       await this.connect();
-      return await this.db
+      const sessions = await this.db
         .collection("sessions")
-        .findOne({ idUser }, { sort: { _id: -1 }, limit: 1 });
+        .find({ idUser })
+        .sort({ createdAt: -1 })
+        .limit(1)
+        .toArray();
+      if (sessions.length === 0) {
+        return null;
+      }
+      return sessions[0];
     } catch (err) {
       throw Error(err.message);
     }

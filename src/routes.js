@@ -15,5 +15,10 @@ router.post(
   tokenMiddlewares.validateToken,
   transactionController.createTransaction
 );
+router.get(
+  "/transaction",
+  tokenMiddlewares.validateToken,
+  transactionController.listTransactions
+);
 
 export default router;

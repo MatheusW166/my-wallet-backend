@@ -24,6 +24,21 @@ async function createTransaction(req, res) {
   }
 }
 
-const transactionController = { createTransaction };
+async function listTransactions(req, res) {
+  try {
+    const session = await dbAdapter.findSession({ token: req.token });
+    if (!session) {
+      return res.status(401).send("user not logged in");
+    }
+    const transactions = await dbAdapter.findTransactions({
+      idUser: session.idUser,
+    });
+    res.status(200).send(transactions);
+  } catch (err) {
+    res.sendStatus(500);
+  }
+}
+
+const transactionController = { createTransaction, listTransactions };
 
 export default transactionController;
