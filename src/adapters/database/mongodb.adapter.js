@@ -68,13 +68,14 @@ class MongoDbAdapter {
     description,
     value,
     idUser,
+    isExit,
     createdAt = Date.now(),
   }) => {
     try {
       await this.connect();
       return await this.db
         .collection("transactions")
-        .insertOne({ idUser, value, description, createdAt });
+        .insertOne({ idUser, value, description, isExit, createdAt });
     } catch (err) {
       throw Error(err.message);
     }
