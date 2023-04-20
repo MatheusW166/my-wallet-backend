@@ -9,6 +9,16 @@ transactionRoutes.post(
   tokenMiddlewares.validateToken,
   transactionController.createTransaction
 );
+transactionRoutes.put(
+  "/transaction/:id",
+  tokenMiddlewares.validateToken,
+  transactionController.editTransaction
+);
+transactionRoutes.delete(
+  "/transaction/:id",
+  tokenMiddlewares.validateToken,
+  transactionController.deleteTransaction
+);
 transactionRoutes.get(
   "/transaction",
   tokenMiddlewares.validateToken,

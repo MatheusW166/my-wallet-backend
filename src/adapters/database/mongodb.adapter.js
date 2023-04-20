@@ -1,4 +1,4 @@
-import { MongoClient } from "mongodb";
+import { MongoClient, ObjectId } from "mongodb";
 import { config } from "dotenv";
 config();
 
@@ -64,6 +64,17 @@ class MongoDbAdapter {
     }
   };
 
+  deleteTransaction = async ({ id }) => {
+    try {
+      await this.connect();
+      return await this.db
+        .collection("transactions")
+        .deleteOne({ _id: new ObjectId(id) });
+    } catch (err) {
+      throw Error(err.message);
+    }
+  };
+
   insertTransaction = async ({
     description,
     value,
@@ -76,6 +87,28 @@ class MongoDbAdapter {
       return await this.db
         .collection("transactions")
         .insertOne({ idUser, value, description, isExit, createdAt });
+    } catch (err) {
+      throw Error(err.message);
+    }
+  };
+
+  updateTransaction = async (id, { description, value }) => {
+    try {
+      await this.connect();
+      return await this.db
+        .collection("transactions")
+        .updateOne({ _id: new ObjectId(id) }, { $set: { description, value } });
+    } catch (err) {
+      throw Error(err.message);
+    }
+  };
+
+  findTransaction = async ({ id }) => {
+    try {
+      await this.connect();
+      return await this.db
+        .collection("transactions")
+        .findOne({ _id: new ObjectId(id) });
     } catch (err) {
       throw Error(err.message);
     }
