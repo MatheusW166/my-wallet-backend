@@ -1,28 +1,32 @@
+import {
+  createTransaction,
+  deleteTransaction,
+  editTransaction,
+  listTransactions,
+} from "../controllers/transaction.controller.js";
 import { Router } from "express";
-import tokenMiddlewares from "../middlewares/token.middleware.js";
-import transactionController from "../controllers/transaction.controller.js";
+import validateToken from "../middlewares/token.middleware.js";
+import validateSession from "../middlewares/session.middleware.js";
+import validateSchema from "../middlewares/schema.middleware.js";
+import { transactionSchema } from "../schemas/transaction.schema.js";
 
 const transactionRoutes = Router();
 
+transactionRoutes.use(validateToken);
+transactionRoutes.use(validateSession);
+
+transactionRoutes.delete("/transaction/:id", deleteTransaction);
+transactionRoutes.get("/transaction", listTransactions);
+
 transactionRoutes.post(
   "/transaction",
-  tokenMiddlewares.validateToken,
-  transactionController.createTransaction
+  validateSchema(transactionSchema),
+  createTransaction
 );
 transactionRoutes.put(
   "/transaction/:id",
-  tokenMiddlewares.validateToken,
-  transactionController.editTransaction
-);
-transactionRoutes.delete(
-  "/transaction/:id",
-  tokenMiddlewares.validateToken,
-  transactionController.deleteTransaction
-);
-transactionRoutes.get(
-  "/transaction",
-  tokenMiddlewares.validateToken,
-  transactionController.listTransactions
+  validateSchema(transactionSchema),
+  editTransaction
 );
 
 export default transactionRoutes;

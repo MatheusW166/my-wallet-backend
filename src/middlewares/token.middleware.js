@@ -13,6 +13,4 @@ async function validateToken(req, res, next) {
   next();
 }
 
-const tokenMiddlewares = { validateToken };
-
-export default tokenMiddlewares;
+export default validateToken;

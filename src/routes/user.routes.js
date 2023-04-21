@@ -1,15 +1,18 @@
+import {
+  getUserData,
+  logIn,
+  register,
+} from "../controllers/user.controller.js";
 import { Router } from "express";
-import userController from "../controllers/user.controller.js";
-import tokenMiddlewares from "../middlewares/token.middleware.js";
+import validateToken from "../middlewares/token.middleware.js";
+import validateSchema from "../middlewares/schema.middleware.js";
+import { loginSchema, registerSchema } from "../schemas/user.schema.js";
+import validateSession from "../middlewares/session.middleware.js";
 
 const userRoutes = Router();
 
-userRoutes.post("/login", userController.logIn);
-userRoutes.post("/register", userController.register);
-userRoutes.get(
-  "/user",
-  tokenMiddlewares.validateToken,
-  userController.getUserData
-);
+userRoutes.post("/login", validateSchema(loginSchema), logIn);
+userRoutes.post("/register", validateSchema(registerSchema), register);
+userRoutes.get("/user", validateToken, validateSession, getUserData);
 
 export default userRoutes;

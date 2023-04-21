@@ -1,20 +1,16 @@
+import dbAdapter from "../adapters/mongodb.adapter.js";
 import { v4 as uuid } from "uuid";
-import dbAdapter from "../adapters/database/mongodb.adapter.js";
-import validationAdapter from "../adapters/validations/validations.adapter.js";
-import bcrypt from "bcrypt";
 import { ObjectId } from "mongodb";
+import bcrypt from "bcrypt";
 
 async function logIn(req, res) {
-  const { value, error } = validationAdapter.validateLogin(req.body);
-  if (error) {
-    return res.status(422).send(error);
-  }
+  const { email, password } = req.body;
   try {
-    const userFound = await dbAdapter.findUser({ email: value.email });
+    const userFound = await dbAdapter.findUser({ email });
     if (!userFound) {
       return res.status(404).send("user not found");
     }
-    if (!bcrypt.compareSync(value.password, userFound.password)) {
+    if (!bcrypt.compareSync(password, userFound.password)) {
       return res.status(401).send("incorrect password");
     }
     const token = uuid();
@@ -30,19 +26,16 @@ async function logIn(req, res) {
 }
 
 async function register(req, res) {
-  const { value, error } = validationAdapter.validateUser(req.body);
-  if (error) {
-    return res.status(422).send(error);
-  }
+  const { email, password, name } = req.body;
   try {
-    const userFound = await dbAdapter.findUser({ email: value.email });
+    const userFound = await dbAdapter.findUser({ email });
     if (userFound) {
       return res.status(409).send("user already exists");
     }
     await dbAdapter.insertUser({
-      email: value.email,
-      name: value.name,
-      password: bcrypt.hashSync(value.password, 10),
+      email,
+      name,
+      password: bcrypt.hashSync(password, 10),
     });
     res.sendStatus(201);
   } catch (err) {
@@ -52,12 +45,8 @@ async function register(req, res) {
 
 async function getUserData(req, res) {
   try {
-    const session = await dbAdapter.findSession({ token: req.token });
-    if (!session) {
-      return res.status(401).send("user not logged in");
-    }
     const userFound = await dbAdapter.findUser({
-      _id: new ObjectId(session.idUser),
+      _id: new ObjectId(req.session.idUser),
     });
     if (!userFound) {
       return res.status(404).send("user not found");
@@ -65,10 +54,9 @@ async function getUserData(req, res) {
     delete userFound.password;
     res.status(200).send(userFound);
   } catch (err) {
+    console.log(err);
     res.sendStatus(500);
   }
 }
 
-const userController = { logIn, register, getUserData };
-
-export default userController;
+export { logIn, register, getUserData };
